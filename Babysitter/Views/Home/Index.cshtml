@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<div class="jumbotron row">
+	<div class="col-md-8">
+		<p><sub class="legend">**All times should be whole number based on a 24 hour clock</sub></p>		
+		<table class="table">
+			<tr>
+				<td><label for="starttime">Start Time</label></td>
+				<td><input class="col-sm-4 text-box single-line" id="starttime" name="starttime" type="number"/></td>
+			</tr>
+			<tr>
+				<td><label for="bedtime">Bed Time</label></td>
+				<td><input class="col-sm-4 text-box single-line" id="bedtime" name="bedtime" type="number"/></td>
+			</tr>
+			<tr>
+				<td><label for="endtime">End Time</label></td>
+				<td><input class="col-sm-4 text-box single-line" id="endtime" name="endtime" type="number"/></td>
+			</tr>
+		</table>
+
+		<p>
+		<div class="row">
+			<p>
+				<button class="btn btn-primary" type="button" id="btn_calc" onclick="GetRate()">Calculate Total &raquo;</button>
+				<input class="btn btn-primary" readonly id="pay_total"/>
+				<p id="output"/>
+			</p>
+		</div>
+		</p>
+	</div>
+</div>
+
+ <script type="text/javascript">
+	function allownums(value) 
+	{ 
+		var num = parseInt(value,10);
+		if (num < 0 || num > 255)
+			return false;
+	}
+	
+	function GetRate() {
+        jQuery.support.cors = true;
+		var st = $("#starttime").val();
+		var bt = $("#bedtime").val();
+		var et = $("#endtime").val();
+        $.ajax({
+            url: '/api/BabysitterRates/Get',
+			data: { StartHour: st,
+					BedtimeHour: bt,
+					EndtimeHour: et
+				},
+            type: 'GET',
+            dataType: 'text',            
+            success: function (data) {                
+				$('#pay_total').val(formatOutput(data));
+				//$('#output').text(formatOutput(data));
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });        
+    }
+	function formatOutput(_data)
+	{
+		return 'total pay ' + ': $' + _data.replace(/['"]+/g, '');
+	}
+</script>
+
+
